@@ -1,0 +1,92 @@
+# Usage #
+```
+
+: ~/terraform_mvn.sh
+ Usage:
+[(ARCHGRP|ARCHREP|ARCHTYPE|ARCHVER|DEBUG|EMAIL|M2|MVN_OPTS|PARENT|PKGPACKAGE|PKGROOT|PKGROOTDESC|PKGTOC|PKGURL|PKGVER)=v].. terraform_mvn.sh <module1..n>
+\n\t>>>> flags for clean, debug, etc. use 't' as true, all else being false.
+
+```
+## example ##
+
+Growing a project with non-maven sources (happens dailly here)
+```
+
+#
+#go into existing project 
+#
+cd ~/work/1xio             
+
+#
+#relocate everything
+#
+mkdir server 
+mv pom.xml src server
+
+rm * #remove detritus project files
+  
+#add existing non-mvn project 
+: svn export http://radixtree.googlecode.com/svn/trunk/RadixTree
+RadixTree/test                                          
+[...]
+Checked out revision 19.
+
+#
+# the easiest way is to start with a spotless project root.  
+# ordering WILL matter but for this case the Radixtree lib is  
+#
+: ls
+RadixTree  server
+
+#
+# run conversion with CLEAN=t to be repeatable 
+# DEBUG=1 is very verbose 
+#
+: CLEAN=1 DEBUG=1 PKGPACKAGE=hideftvads PKGURL=http://code.google.com/p/1xio ~/terraform_mvn.sh RadixTree server             
+using cmdline switches mvn -B -npu
+svn: '.' is not a working copy
+svn: '.' is not a working copy
+/usr/lib/jvm/java
+[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: 'archetype'.
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Default Project
+[INFO]    task-segment: [archetype:generate] (aggregator-style)
+[INFO] ------------------------------------------------------------------------
+[...]
+```
+
+## Results ##
+what to expect in a perfect world
+
+```
+: mvn install
+/usr/lib/jvm/java
+[INFO] Scanning for projects...
+[INFO] Reactor build order:    
+[INFO]   1xio-parent           
+[INFO]   1xio-RadixTree        
+[INFO]   1xio-server           
+[INFO] ------------------------------------------------------------------------                                                   
+[...]
+
+[INFO] Installing /home/jim/work/1xio/1xio-server/target/1xio-server-0.0.4.jar to /home/jim/.m2/repository/hideftvads/1xio-server/0.0.4/1xio-server-0.0.4.jar                                      
+[INFO]                                                           
+[INFO]                                                           
+[INFO] ------------------------------------------------------------------------                                                   
+[INFO] Reactor Summary:                                          
+[INFO] ------------------------------------------------------------------------                                                   
+[INFO] 1xio-parent ........................................... SUCCESS [24.445s]                                                  
+[INFO] 1xio-RadixTree ........................................ SUCCESS [16.962s]
+[INFO] 1xio-server ........................................... SUCCESS [4.130s]
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 46 seconds
+[INFO] Finished at: Sat May 30 12:28:59 GMT-07:00 2009
+[INFO] Final Memory: 40M/67M
+[INFO] ------------------------------------------------------------------------
+
+```
+
